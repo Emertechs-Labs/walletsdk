@@ -11,7 +11,7 @@
 
 *Real wallet integration with dual blockchain support, type-safe APIs, and seamless user experience*
 
-[🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [🔧 API Reference](#-api-reference) • [📦 Installation](#-installation)
+[🚀 Quick Start](#-quick-start) • [📚 Documentation](./docs/) • [🔧 API Reference](#-api-reference) • [📦 Installation](#-installation)
 
 </div>
 
@@ -29,6 +29,9 @@
 - **🎨 Beautiful UI**: RainbowKit-powered wallet selection and connection
 - **📱 Mobile Ready**: PWA-compatible with responsive design
 - **🧪 Well Tested**: 95%+ test coverage with comprehensive validation
+- **📧 Email Authentication**: Sign up/sign in with email for persistent accounts (optional)
+- **🔗 Wallet Binding**: Bind/unbind multiple wallets to user accounts
+- **🎭 Universal Wallet**: Automatic wallet generation and management for seamless UX without losing data
 
 ---
 
@@ -55,6 +58,35 @@ pnpm add @polymathuniversata/echain-wallet
 }
 ```
 
+### Firebase Setup (Optional)
+
+For email authentication and wallet binding features, you need to set up Firebase:
+
+1. Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2. Enable Authentication with Email/Password provider
+3. Enable Firestore Database
+4. Get your Firebase config from Project Settings
+
+```typescript
+import { initializeFirebase } from '@polymathuniversata/echain-wallet';
+
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+};
+
+initializeFirebase(firebaseConfig);
+```
+
+**Note**: Firebase is an optional dependency. Install it only if you need authentication features:
+```bash
+npm install firebase
+```
+
 ---
 
 ## 🚀 Quick Start
@@ -62,29 +94,21 @@ pnpm add @polymathuniversata/echain-wallet
 ### Basic Setup
 
 ```typescript
-import {
-  UnifiedConnectModal,
-  BalanceDisplay,
-  NetworkSwitcher,
-  useHederaWallet
-} from '@polymathuniversata/echain-wallet';
+import { initializeFirebase } from '@polymathuniversata/echain-wallet';
+
+// Initialize Firebase (required for auth features)
+initializeFirebase({
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+});
 
 function App() {
-  const { account, balance, connect, disconnect } = useHederaWallet();
-
   return (
-    <div>
-      <UnifiedConnectModal />
-      <BalanceDisplay accountId={account?.accountId} />
-      <NetworkSwitcher />
-
-      {account && (
-        <div>
-          <p>Connected: {account.accountId}</p>
-          <p>Balance: {balance} HBAR</p>
-        </div>
-      )}
-    </div>
+    <UnifiedConnectModal />
   );
 }
 ```
@@ -113,7 +137,15 @@ function App() {
 
 ## 📚 Documentation
 
-### Core Concepts
+### Docs Directory
+
+For detailed documentation, see the `docs/` directory:
+
+- [Setup Guide](docs/setup.md) - Installation and configuration
+- [Universal Wallet](docs/universal-wallet.md) - Automatic wallet management
+- [API Reference](docs/README.md) - Complete API documentation
+
+### Quick Start
 
 #### Wallet Managers
 The library provides centralized wallet management for different networks:
@@ -199,22 +231,67 @@ function MyComponent() {
 }
 ```
 
-#### useWalletConnection
+#### useAuth
 
 ```typescript
-import { useWalletConnection } from '@polymathuniversata/echain-wallet';
+import { useAuth } from '@polymathuniversata/echain-wallet';
 
 function MyComponent() {
   const {
-    walletType,     // 'ethereum' | 'hedera'
-    isSupported,    // Browser support status
-    connectWallet,  // Generic connect function
-    disconnectWallet // Generic disconnect function
-  } = useWalletConnection();
+    user,        // Current authenticated user
+    loading,     // Auth loading state
+    signUp,      // Sign up function
+    signIn,      // Sign in function
+    signOut,     // Sign out function
+    resetPassword // Password reset function
+  } = useAuth();
 
   // Usage
-  const handleConnect = (type: 'ethereum' | 'hedera') =>
-    connectWallet(type);
+  const handleSignUp = async () => {
+    try {
+      await signUp('user@example.com', 'password');
+    } catch (error) {
+      console.error('Sign up failed:', error);
+    }
+  };
+}
+```
+
+#### useUniversalWallet
+
+```typescript
+import { useUniversalWallet } from '@polymathuniversata/echain-wallet';
+
+function MyComponent() {
+  const {
+    universalWallet,
+    loading,
+    createUniversalWallet,
+    getWalletSigner
+  } = useUniversalWallet();
+
+  // Create a universal wallet for the user
+  const handleCreateWallet = async () => {
+    await createUniversalWallet('user-password');
+  };
+
+  // Get signer for transactions
+  const handleTransaction = async () => {
+    const signer = await getWalletSigner('user-password');
+    // Use signer for transactions
+  };
+
+  return (
+    <div>
+      {!universalWallet ? (
+        <button onClick={handleCreateWallet} disabled={loading}>
+          Create Universal Wallet
+        </button>
+      ) : (
+        <p>Wallet: {universalWallet.address}</p>
+      )}
+    </div>
+  );
 }
 ```
 

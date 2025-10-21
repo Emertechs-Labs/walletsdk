@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useConnect } from 'wagmi';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight, LogIn, UserPlus } from 'lucide-react';
 import { getHederaWalletManager, HederaWalletConnector } from '../lib/hedera-wallet-manager';
+import { useAuth, useUserWallets } from '../hooks';
 
 interface UnifiedConnectModalProps {
   isOpen: boolean;
@@ -12,10 +13,18 @@ interface UnifiedConnectModalProps {
 }
 
 export function UnifiedConnectModal({ isOpen, onClose, onHederaWalletConnect }: UnifiedConnectModalProps) {
-  const { connectors, connect, isPending, error } = useConnect();
+  const { connectors, connect, isPending } = useConnect();
   const [hederaConnectors, setHederaConnectors] = useState<HederaWalletConnector[]>([]);
   const [isHederaConnecting, setIsHederaConnecting] = useState(false);
   const [hederaError, setHederaError] = useState<string | null>(null);
+
+  // Auth state
+  const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+    const { bindWallet } = useUserWallets();
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Load Hedera connectors on mount
   useEffect(() => {
@@ -87,8 +96,25 @@ export function UnifiedConnectModal({ isOpen, onClose, onHederaWalletConnect }: 
     }
   };
 
-  const handleEthereumWalletConnect = (connector: any) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    try {
+      if (authMode === 'signin') {
+        await signIn(email, password);
+      } else {
+        await signUp(email, password);
+      }
+      setEmail('');
+      setPassword('');
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'Authentication failed');
+    }
+  };
+
+  const handleEthereumWalletConnect = async (connector: any) => {
     connect({ connector });
+    // Note: Actual wallet address binding would happen after connection via useAccount
     onClose();
   };
 
@@ -102,6 +128,11 @@ export function UnifiedConnectModal({ isOpen, onClose, onHederaWalletConnect }: 
 
       if (onHederaWalletConnect) {
         onHederaWalletConnect(walletInfo);
+      }
+
+      // Bind wallet if user is signed in
+      if (user && walletInfo.accountId) {
+        await bindWallet(walletInfo.accountId, 'hedera');
       }
 
       onClose();
@@ -132,14 +163,81 @@ export function UnifiedConnectModal({ isOpen, onClose, onHederaWalletConnect }: 
           </button>
         </div>
 
-        {/* Error Messages */}
-        {(error || hederaError) && (
-          <div className="m-4 p-4 bg-red-50 border border-red-200 rounded-lg mx-6 mt-4">
-            <p className="text-red-600 text-sm">
-              {error?.message || hederaError}
-            </p>
-          </div>
-        )}
+        {/* Auth Section */}
+        <div className="p-6 border-b border-gray-200">
+          {user ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Signed in as</p>
+                <p className="font-medium text-gray-900">{user.email}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="text-sm text-red-600 hover:text-red-700"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setAuthMode('signin')}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
+                    authMode === 'signin'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <LogIn className="w-4 h-4 inline mr-2" />
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setAuthMode('signup')}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium ${
+                    authMode === 'signup'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <UserPlus className="w-4 h-4 inline mr-2" />
+                  Sign Up
+                </button>
+              </div>
+              <form onSubmit={handleAuthSubmit} className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {authLoading ? 'Processing...' : authMode === 'signin' ? 'Sign In' : 'Sign Up'}
+                </button>
+              </form>
+              {authError && (
+                <p className="text-red-600 text-sm mt-2">{authError}</p>
+              )}
+              {hederaError && (
+                <p className="text-red-600 text-sm mt-2">{hederaError}</p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Ethereum Wallets Section */}
         {walletOptions.length > 0 && (
