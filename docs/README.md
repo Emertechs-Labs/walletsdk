@@ -10,6 +10,7 @@ The Echain Wallet SDK provides comprehensive wallet management for Ethereum, Bas
 - **[Project Overview](project-overview.md)** - Complete project vision, features, and status
 - **[Roadmap](roadmap.md)** - Detailed development roadmap and future plans
 - **[Architecture](architecture.md)** - Technical architecture and design decisions
+- **[Audit Implementation Plan](audit-implementation-plan.md)** - Code quality and security improvement roadmap
 
 ### 🛠️ Developer Guides
 - **[Setup Guide](setup.md)** - Installation and configuration instructions
