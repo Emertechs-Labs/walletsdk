@@ -122,8 +122,39 @@ export function NetworkSwitcher({
   const handleNetworkSelect = async (network: BaseNetworkInfo) => {
     try {
       if (network.type === 'ethereum' && network.chainId) {
-        // Switch Ethereum network
-        await switchChain({ chainId: network.chainId });
+        // For MetaMask, ensure network is added
+        if (window.ethereum && window.ethereum.isMetaMask) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: `0x${network.chainId.toString(16)}` }],
+            });
+          } catch (switchError: any) {
+            // If network not added, add it
+            if (switchError.code === 4902) {
+              const chainParams = network.id === 'base-mainnet' ? {
+                chainId: '0x2105', // 8453
+                chainName: 'Base',
+                nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://mainnet.base.org'],
+                blockExplorerUrls: ['https://basescan.org'],
+              } : {
+                chainId: '0x14a34', // 84532
+                chainName: 'Base Sepolia',
+                nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia.base.org'],
+                blockExplorerUrls: ['https://sepolia.basescan.org'],
+              };
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [chainParams],
+              });
+            }
+          }
+        } else {
+          // For other wallets, use wagmi switchChain
+          await switchChain({ chainId: network.chainId });
+        }
       } else if (network.type === 'hedera' && network.hederaNetwork) {
         // Switch Hedera network
         await switchHederaNetwork(network.hederaNetwork);
@@ -250,6 +281,7 @@ export function NetworkBadge({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`
         inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border

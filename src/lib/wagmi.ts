@@ -1,12 +1,13 @@
 import { createConfig, http } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
+import { base, baseSepolia } from 'wagmi/chains';
 import { baseRPCManager } from '../lib/base-rpc-manager';
 
 // Server-safe minimal config
 const createMinimalConfig = () => {
   return createConfig({
-    chains: [baseSepolia],
+    chains: [base, baseSepolia],
     transports: {
+      [base.id]: http('https://mainnet.base.org'),
       [baseSepolia.id]: http('https://sepolia.base.org'),
     },
     connectors: [],
@@ -20,8 +21,16 @@ const createClientConfig = async () => {
   if (_clientConfig) return _clientConfig;
 
   try {
-    // Dynamic import to avoid server-side issues
-    const { connectorsForWallets } = await import('@rainbow-me/rainbowkit');
+    // Dynamic import to avoid server-side issues and handle missing packages
+    const rainbowKit = await import('@rainbow-me/rainbowkit').catch(() => null);
+    const rainbowWallets = await import('@rainbow-me/rainbowkit/wallets').catch(() => null);
+
+    if (!rainbowKit || !rainbowWallets) {
+      console.warn('RainbowKit not available, using minimal config');
+      return createMinimalConfig();
+    }
+
+    const { connectorsForWallets } = rainbowKit;
     const {
       metaMaskWallet,
       walletConnectWallet,
@@ -29,7 +38,7 @@ const createClientConfig = async () => {
       rainbowWallet,
       braveWallet,
       injectedWallet,
-    } = await import('@rainbow-me/rainbowkit/wallets');
+    } = rainbowWallets;
 
     const appName = 'Echain Wallet';
     const projectId = process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID || 'your-project-id';
@@ -40,8 +49,8 @@ const createClientConfig = async () => {
           groupName: 'Recommended',
           wallets: [
             metaMaskWallet,
-            walletConnectWallet,
-            coinbaseWallet,
+            walletConnectWallet({ projectId, qrModalOptions: { themeMode: 'light' } }),
+            coinbaseWallet({ appName, preference: 'smartWalletOnly' }),
             rainbowWallet,
             braveWallet,
             injectedWallet,
@@ -55,8 +64,9 @@ const createClientConfig = async () => {
     );
 
     _clientConfig = createConfig({
-      chains: [baseSepolia],
+      chains: [base, baseSepolia],
       transports: {
+        [base.id]: http('https://mainnet.base.org'),
         [baseSepolia.id]: http('https://sepolia.base.org'),
       },
       connectors,

@@ -6,6 +6,12 @@ import HederaTransactionService from '../../services/hederaTransactionService';
 jest.mock('../../services/hederaTransactionService');
 const MockHederaTransactionService = HederaTransactionService as jest.MockedClass<typeof HederaTransactionService>;
 
+// Mock the useHederaWallet hook
+jest.mock('../../hooks/useHederaWallet', () => ({
+  useHederaWallet: jest.fn(),
+}));
+const mockUseHederaWallet = require('../../hooks/useHederaWallet').useHederaWallet;
+
 describe('BalanceDisplay', () => {
   const mockConfig = {
     network: 'testnet' as const,
@@ -34,21 +40,44 @@ describe('BalanceDisplay', () => {
       getAccountBalance: jest.fn().mockResolvedValue(mockBalanceData),
     };
     MockHederaTransactionService.mockImplementation(() => mockServiceInstance as any);
+
+    // Mock useHederaWallet hook
+    mockUseHederaWallet.mockReturnValue({
+      isConnected: false,
+      accountId: null,
+      walletType: null,
+      network: 'testnet',
+      isConnecting: false,
+      error: null,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      switchNetwork: jest.fn(),
+      getAccountBalance: jest.fn().mockResolvedValue(BigInt('1000000000')), // 10 HBAR in tinybars
+      getAccountInfo: jest.fn(),
+      signTransaction: jest.fn(),
+      signMessage: jest.fn(),
+      clearError: jest.fn(),
+      formatAccountId: jest.fn((accountId: string) => accountId),
+    });
   });
 
   describe('initial rendering', () => {
     it('shows loading state initially', () => {
       render(<BalanceDisplay {...defaultProps} />);
 
-      expect(screen.getByText('Account Balance')).toBeInTheDocument();
-      expect(screen.getAllByRole('presentation')).toHaveLength(3); // Loading skeleton elements
+      // Should show loading skeleton, not the header
+      const skeletonElements = document.querySelectorAll('.animate-pulse > div');
+      expect(skeletonElements).toHaveLength(3); // Loading skeleton elements
+      expect(screen.queryByText('Account Balance')).not.toBeInTheDocument();
     });
 
-    it('displays account ID and network', () => {
+    it('displays account ID and network after loading', async () => {
       render(<BalanceDisplay {...defaultProps} />);
 
-      expect(screen.getByText('0.0.12345')).toBeInTheDocument();
-      expect(screen.getByText('testnet')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('0.0.12345')).toBeInTheDocument();
+        expect(screen.getByText('testnet')).toBeInTheDocument();
+      });
     });
   });
 
@@ -107,10 +136,37 @@ describe('BalanceDisplay', () => {
     });
 
     it('shows error for missing account ID', async () => {
-      render(<BalanceDisplay {...defaultProps} accountId="" />);
+      // Mock both wagmi and Hedera as disconnected for this test
+      const { useAccount } = require('../../__mocks__/wagmi');
+      useAccount.mockReturnValueOnce({
+        address: undefined,
+        isConnected: false,
+        chainId: undefined,
+        connector: undefined,
+      });
+
+      mockUseHederaWallet.mockReturnValueOnce({
+        isConnected: false,
+        accountId: null,
+        walletType: null,
+        network: null,
+        isConnecting: false,
+        error: null,
+        connect: jest.fn(),
+        disconnect: jest.fn(),
+        switchNetwork: jest.fn(),
+        getAccountBalance: jest.fn(),
+        getAccountInfo: jest.fn(),
+        signTransaction: jest.fn(),
+        signMessage: jest.fn(),
+        clearError: jest.fn(),
+        formatAccountId: jest.fn(),
+      });
+
+      render(<BalanceDisplay config={mockConfig} />); // Don't pass accountId or defaultProps
 
       await waitFor(() => {
-        expect(screen.getByText('No account ID provided')).toBeInTheDocument();
+        expect(screen.getByText('No account connected')).toBeInTheDocument();
       });
     });
   });

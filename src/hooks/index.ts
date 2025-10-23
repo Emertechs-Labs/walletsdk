@@ -5,3 +5,8 @@ export { useMultisig } from './useMultisig';
 export { useAuth } from './useAuth';
 export { useUserWallets } from './useUserWallets';
 export { useUniversalWallet } from './useUniversalWallet';
+export { useSIWE } from './useSIWE';
+export { useFarcasterAuth } from './useFarcasterAuth';
+export { usePrivyAuth, PrivyProvider } from './usePrivyAuth';
+export { useGasOptimization } from './useGasOptimization';
+export { useTransactionHistory } from './useTransactionHistory';

@@ -43,6 +43,7 @@ export function BalanceDisplay({
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [walletType, setWalletType] = useState<'ethereum' | 'hedera' | null>(null);
 
@@ -51,7 +52,7 @@ export function BalanceDisplay({
     (hederaIsConnected ? hederaAccountId : null) ||
     (ethIsConnected ? ethAddress : null);
 
-  const activeWalletType = accountId
+  const activeWalletType = accountId && accountId.trim() !== ''
     ? (accountId.includes('.') ? 'hedera' : 'ethereum') // Simple heuristic
     : hederaIsConnected
       ? 'hedera'
@@ -66,11 +67,15 @@ export function BalanceDisplay({
 
   const transactionService = config ? new HederaTransactionService(config) : null;
 
-  const fetchBalance = useCallback(async () => {
+  const fetchBalance = useCallback(async (isManualRefresh = false) => {
     if (!activeAccountId) {
       setError('No account connected');
       setLoading(false);
       return;
+    }
+
+    if (isManualRefresh) {
+      setRefreshing(true);
     }
 
     try {
@@ -108,22 +113,26 @@ export function BalanceDisplay({
       }
 
       setLastUpdated(new Date());
-
-      if (onBalanceUpdate) {
-        onBalanceUpdate(hbarBalance, tokenBalances);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch balance');
       console.error('Balance fetch error:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, [activeAccountId, activeWalletType, config?.network, onBalanceUpdate, transactionService, getHederaBalance, ethBalance, hbarBalance, tokenBalances]);
+  }, []); // Remove all dependencies to prevent infinite loops
+
+  // Call onBalanceUpdate when balances change
+  useEffect(() => {
+    if (onBalanceUpdate && lastUpdated) {
+      onBalanceUpdate(hbarBalance, tokenBalances);
+    }
+  }, [onBalanceUpdate, hbarBalance, tokenBalances, lastUpdated]);
 
   // Initial fetch
   useEffect(() => {
     fetchBalance();
-  }, [fetchBalance]);
+  }, []); // Call fetchBalance on mount, it will handle the account check internally
 
   // Auto-refresh
   useEffect(() => {
@@ -131,7 +140,7 @@ export function BalanceDisplay({
 
     const interval = setInterval(fetchBalance, refreshInterval);
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, fetchBalance]);
+  }, [autoRefresh, refreshInterval]); // Remove fetchBalance dependency
 
   const formatBalance = (balance: number): string => {
     return new Intl.NumberFormat('en-US', {
@@ -179,13 +188,13 @@ export function BalanceDisplay({
             {walletType === 'hedera' ? (config?.network || 'hedera') : 'ethereum'}
           </span>
           <button
-            onClick={fetchBalance}
-            disabled={loading}
+            onClick={() => fetchBalance(true)}
+            disabled={loading || refreshing}
             className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
             title="Refresh balance"
           >
             <svg
-              className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}
+              className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

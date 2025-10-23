@@ -12,14 +12,12 @@ interface ConnectModalProps {
 }
 
 type AuthMethod = 'email' | 'wallet' | 'smart';
-type WalletType = 'ethereum' | 'hedera';
 
 export function ConnectModal({ isOpen, onClose, onSuccess }: ConnectModalProps) {
   const [authMethod, setAuthMethod] = useState<AuthMethod | null>(null);
   const [email, setEmail] = useState('');
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [walletType, setWalletType] = useState<WalletType | null>(null);
   
   const { connectors, connect, isPending, error: ethError } = useConnect();
   const [hederaConnectors, setHederaConnectors] = useState<HederaWalletConnector[]>([]);
@@ -53,7 +51,6 @@ export function ConnectModal({ isOpen, onClose, onSuccess }: ConnectModalProps) 
         setAuthMethod(null);
         setEmail('');
         setEmailError('');
-        setWalletType(null);
       }, 200);
     }
   }, [isOpen]);
@@ -67,11 +64,7 @@ export function ConnectModal({ isOpen, onClose, onSuccess }: ConnectModalProps) 
   };
 
   const handleBack = () => {
-    if (walletType) {
-      setWalletType(null);
-    } else {
-      setAuthMethod(null);
-    }
+    setAuthMethod(null);
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -99,12 +92,6 @@ export function ConnectModal({ isOpen, onClose, onSuccess }: ConnectModalProps) 
     } finally {
       setIsEmailSubmitting(false);
     }
-  };
-
-  const handleFarcasterLogin = () => {
-    // Trigger Farcaster authentication
-    window.dispatchEvent(new CustomEvent('farcaster-auth-start'));
-    onClose();
   };
 
   const handleEthereumWalletConnect = (connector: any) => {
@@ -206,6 +193,7 @@ export function ConnectModal({ isOpen, onClose, onSuccess }: ConnectModalProps) 
             <button
               onClick={handleBack}
               className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Go back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>

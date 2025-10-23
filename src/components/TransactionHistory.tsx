@@ -32,7 +32,7 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
   // Connect to Hedera (for future multisig integration)
   useHederaProvider(hederaConfig);
   const [transactions, setTransactions] = useState<TransactionWithDetails[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!accountId); // Start loading if accountId is provided
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20);

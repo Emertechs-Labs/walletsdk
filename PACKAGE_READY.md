@@ -1,8 +1,8 @@
-# @echain/wallet - Package Publication Ready ✅
+# @polymathuniversata/echain-wallet - Package Publication Ready ✅
 
 **Status**: Production Ready  
-**Version**: 1.0.0  
-**Date**: October 9, 2025
+**Version**: 1.0.2  
+**Date**: October 23, 2025
 
 ## ✅ Completion Checklist
 
@@ -83,9 +83,9 @@
 
 ```json
 {
-  "name": "@echain/wallet",
-  "version": "1.0.0",
-  "description": "A comprehensive wallet management library for Echain, specifically optimized for Base network interactions with React hooks and UI components",
+  "name": "@polymathuniversata/echain-wallet",
+  "version": "1.0.2",
+  "description": "A comprehensive wallet management library for Echain, supporting Base network and Hedera Hashgraph multisig functionality with React hooks and UI components",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts"

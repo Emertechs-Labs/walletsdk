@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Echain Wallet](https://img.shields.io/badge/Echain-Wallet_Package-00D4FF?style=for-the-badge&logo=ethereum&logoColor=white)
-![NPM Version](https://img.shields.io/badge/npm-1.0.0-blue?style=for-the-badge&logo=npm)
+![NPM Version](https://img.shields.io/badge/npm-1.0.2-blue?style=for-the-badge&logo=npm)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 
@@ -32,6 +32,11 @@
 - **📧 Email Authentication**: Sign up/sign in with email for persistent accounts (optional)
 - **🔗 Wallet Binding**: Bind/unbind multiple wallets to user accounts
 - **🎭 Universal Wallet**: Automatic wallet generation and management for seamless UX without losing data
+- **🔑 SIWE Support**: Sign-In with Ethereum for secure authentication on Base
+- **🎭 Farcaster Integration**: Decentralized social authentication via Farcaster
+- **🔐 Privy Auth**: Passwordless authentication with embedded wallets
+- **⚡ Account Abstraction**: Smart wallets with gasless transactions on Base
+- **🤖 AI Agent Support**: AgentKit integration for AI-driven wallet interactions
 
 ---
 
@@ -160,6 +165,11 @@ Powerful hooks for wallet state management:
 - `useHederaWallet`: Hedera-specific wallet state and actions
 - `useWalletConnection`: General wallet connection utilities
 - `useWalletHelpers`: Helper functions for wallet operations
+- `useSIWE`: Sign-In with Ethereum authentication
+- `useFarcasterAuth`: Farcaster decentralized authentication
+- `usePrivyAuth`: Privy passwordless authentication
+- `useGasOptimization`: Gas estimation and optimization for Base
+- `useTransactionHistory`: Transaction history fetching for Base
 
 #### UI Components
 Pre-built, customizable components:
@@ -375,8 +385,8 @@ function MyComponent() {
 | Network | Status | Features |
 | ------- | ------ | -------- |
 | **Ethereum Mainnet** | ✅ Supported | Full wallet integration |
-| **Base Mainnet** | ✅ Supported | Gasless transactions, PWA |
-| **Base Sepolia** | ✅ Supported | Testnet deployment |
+| **Base Mainnet** | ✅ **FULLY INTEGRATED** | Gasless transactions, account abstraction, AI agents |
+| **Base Sepolia** | ✅ **FULLY INTEGRATED** | Testnet deployment, smart wallets, comprehensive testing |
 
 ### Hedera Networks
 
@@ -389,10 +399,10 @@ function MyComponent() {
 ### Wallet Connectors
 
 #### Ethereum/Base
-- **MetaMask**: Browser extension wallet
-- **WalletConnect**: Cross-platform wallet connectivity
-- **Coinbase Wallet**: Mobile and browser wallet
-- **Rainbow**: Multi-wallet support
+- **MetaMask**: Browser extension wallet with auto-network addition
+- **WalletConnect**: Universal wallet connector with QR modal
+- **Coinbase Wallet**: Native Base support with smart wallet features
+- **Rainbow**: Multi-wallet support with Base optimization
 
 #### Hedera
 - **HashPack**: Official Hedera wallet
@@ -412,22 +422,29 @@ function MyComponent() {
 │  │                 │    │                 │                 │
 │  │ • ConnectModal  │    │ • useHederaWallet│                 │
 │  │ • BalanceDisplay│    │ • useWalletConn │                 │
-│  │ • NetworkSwitch │    │ • useWalletHelp │                 │
-│  └─────────────────┘    └─────────────────┘                 │
+│  │ • NetworkSwitch │    │ • useSIWE       │                 │
+│  │ • WalletTrouble │    │ • useFarcaster  │                 │
+│  └─────────────────┘    │ • usePrivyAuth  │                 │
+│                         │ • useGasOptimiz │                 │
+│                         │ • useTxHistory  │                 │
+│                         └─────────────────┘                 │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────┐    ┌─────────────────┐                 │
 │  │ Wallet Managers │    │   Connectors    │                 │
 │  │                 │    │                 │                 │
 │  │ • HederaManager │    │ • HashPackConn  │                 │
-│  │ • BaseManager   │    │ • BladeConn     │                 │
-│  │                 │    │ • KabilaConn    │                 │
+│  │ • BaseManager   │    │ • CoinbaseWallet│                 │
+│  │ • SmartWalletMgr│    │ • WalletConnect │                 │
+│  │ • ZeroDevMgr    │    │ • RainbowWallet │                 │
+│  │ • AgentKitMgr   │    │ • MetaMask      │                 │
 │  └─────────────────┘    └─────────────────┘                 │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────┐    ┌─────────────────┐                 │
 │  │   Services      │    │    Types        │                 │
 │  │                 │    │                 │                 │
 │  │ • TransactionSvc│    │ • HederaTypes   │                 │
-│  │ • RPCManager    │    │ • WalletTypes   │                 │
+│  │ • RPCManager    │    │ • BaseTypes     │                 │
+│  │ • SecurityUtils │    │ • AuthTypes     │                 │
 │  └─────────────────┘    └─────────────────┘                 │
 └─────────────────────────────────────────────────────────────┘
          │                       │
@@ -437,7 +454,10 @@ function MyComponent() {
 │                 │    │                 │
 │ • Multisig      │    │ • Ethereum      │
 │ • Transactions  │    │ • Base Network  │
-│ • Accounts      │    │ • Wallet Mgmt   │
+│ • Accounts      │    │ • Smart Wallets │
+│                 │    │ • Account Abstr │
+│                 │    │ • SIWE/Farcaster│
+│                 │    │ • Privy Auth    │
 └─────────────────┘    └─────────────────┘
 ```
 
@@ -588,6 +608,6 @@ MIT License - see [LICENSE](../../LICENSE) file for details.
 
 *Built with ❤️ for the Web3 community*
 
-*Version 1.0.0 • Last Updated: October 10, 2025*
+*Version 1.0.2 • Last Updated: October 23, 2025*
 
 </div>

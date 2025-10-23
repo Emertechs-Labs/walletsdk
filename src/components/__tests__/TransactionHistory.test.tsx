@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { TransactionHistory } from '../TransactionHistory';
 import HederaTransactionService from '../../services/hederaTransactionService';
 import { useHederaProvider } from '../../hooks/useHederaProvider';
@@ -40,10 +40,14 @@ describe('TransactionHistory', () => {
   ];
 
   const mockServiceInstance = {
-    getAccountTransactions: jest.fn().mockResolvedValue({
-      transactions: mockTransactions,
-      links: { next: null },
-    }),
+    getAccountTransactions: jest.fn().mockImplementation(() => 
+      new Promise(resolve => {
+        setTimeout(() => resolve({
+          transactions: mockTransactions,
+          links: { next: null },
+        }), 0);
+      })
+    ),
     convertMirrorTransaction: jest.fn().mockReturnValue({
       id: '0.0.12345@1234567890.000000000',
       hash: 'hash123',
@@ -66,22 +70,28 @@ describe('TransactionHistory', () => {
   });
 
   describe('initial rendering', () => {
-    it('shows message when no account ID is provided', () => {
-      render(<TransactionHistory hederaConfig={mockConfig} />);
+    it('shows message when no account ID is provided', async () => {
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} />);
+      });
 
       expect(screen.getByText('Please provide an account ID to view transaction history')).toBeInTheDocument();
     });
 
-    it('renders header with title and buttons', () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+    it('renders header with title and buttons', async () => {
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       expect(screen.getByText('Transaction History')).toBeInTheDocument();
       expect(screen.getByText('Show Filters')).toBeInTheDocument();
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
-    it('displays loading state initially', () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+    it('displays loading state initially', async () => {
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       expect(screen.getByText('Loading transactions...')).toBeInTheDocument();
     });
@@ -89,7 +99,9 @@ describe('TransactionHistory', () => {
 
   describe('transaction loading', () => {
     it('loads and displays transactions successfully', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         // Check for any date string that contains 1/1/2021
@@ -109,7 +121,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithError as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -126,7 +140,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceEmpty as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('No transactions found')).toBeInTheDocument();
@@ -136,7 +152,9 @@ describe('TransactionHistory', () => {
 
   describe('filtering functionality', () => {
     it('toggles filter visibility', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.queryByText('Start Date')).not.toBeInTheDocument();
@@ -150,7 +168,9 @@ describe('TransactionHistory', () => {
     });
 
     it('applies date range filters', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText(/1\/1\/2021/)).toBeInTheDocument();
@@ -172,7 +192,9 @@ describe('TransactionHistory', () => {
     });
 
     it('applies amount range filters', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('2 HBAR')).toBeInTheDocument();
@@ -194,7 +216,9 @@ describe('TransactionHistory', () => {
     });
 
     it('applies status filters', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('executed')).toBeInTheDocument();
@@ -213,7 +237,9 @@ describe('TransactionHistory', () => {
     });
 
     it('applies search filter', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('0.0.67890')).toBeInTheDocument();
@@ -232,7 +258,9 @@ describe('TransactionHistory', () => {
     });
 
     it('clears all filters', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('2 HBAR')).toBeInTheDocument();
@@ -279,7 +307,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithMultiple as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getAllByText(/HBAR/)).toHaveLength(2);
@@ -318,7 +348,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithMultiple as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getAllByText(/HBAR/)).toHaveLength(2);
@@ -349,7 +381,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithMany as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
@@ -375,7 +409,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithMany as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
@@ -391,7 +427,9 @@ describe('TransactionHistory', () => {
 
   describe('refresh functionality', () => {
     it('refreshes transactions when refresh button is clicked', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('2 HBAR')).toBeInTheDocument();
@@ -403,7 +441,9 @@ describe('TransactionHistory', () => {
     });
 
     it('shows loading state during refresh', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('2 HBAR')).toBeInTheDocument();
@@ -417,7 +457,9 @@ describe('TransactionHistory', () => {
 
   describe('transaction type detection', () => {
     it('identifies transfer transactions', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Transfer')).toBeInTheDocument();
@@ -443,7 +485,9 @@ describe('TransactionHistory', () => {
       };
       MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithContract as any);
 
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Contract Call')).toBeInTheDocument();
@@ -479,7 +523,9 @@ describe('TransactionHistory', () => {
         };
         MockHederaTransactionService.mockImplementation(() => mockServiceInstanceWithStatus as any);
 
-        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+        await act(async () => {
+          render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+        });
 
         await waitFor(() => {
           const statusElement = screen.getByText(status);
@@ -494,7 +540,9 @@ describe('TransactionHistory', () => {
 
   describe('accessibility', () => {
     it('has proper ARIA labels for filter inputs', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       fireEvent.click(screen.getByText('Show Filters'));
 
@@ -506,7 +554,9 @@ describe('TransactionHistory', () => {
     });
 
     it('has proper ARIA labels for status checkboxes', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       fireEvent.click(screen.getByText('Show Filters'));
 
@@ -517,7 +567,9 @@ describe('TransactionHistory', () => {
     });
 
     it('has proper ARIA labels for type checkboxes', async () => {
-      render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      await act(async () => {
+        render(<TransactionHistory hederaConfig={mockConfig} accountId="0.0.12345" />);
+      });
 
       fireEvent.click(screen.getByText('Show Filters'));
 
