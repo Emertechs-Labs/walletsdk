@@ -75,8 +75,8 @@ describe('BalanceDisplay', () => {
       render(<BalanceDisplay {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText('0.0.12345')).toBeInTheDocument();
-        expect(screen.getByText('testnet')).toBeInTheDocument();
+        expect(screen.getByText('Hedera Account: 0.0.12345')).toBeInTheDocument();
+        expect(screen.getByText('Connected')).toBeInTheDocument();
       });
     });
   });
@@ -97,7 +97,7 @@ describe('BalanceDisplay', () => {
       render(<BalanceDisplay {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Token Balances')).toBeInTheDocument();
+        expect(screen.getByText('Token Holdings')).toBeInTheDocument();
       });
 
       expect(screen.getByText('0.0.67890')).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('5.00')).toBeInTheDocument();
       });
 
-      expect(screen.queryByText('Token Balances')).not.toBeInTheDocument();
+      expect(screen.queryByText('Token Holdings')).not.toBeInTheDocument();
     });
 
     it('displays error message on fetch failure', async () => {
@@ -131,7 +131,7 @@ describe('BalanceDisplay', () => {
       render(<BalanceDisplay {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Network error')).toBeInTheDocument();
+        expect(screen.getByText('Error: Network error')).toBeInTheDocument();
       });
     });
 
@@ -166,7 +166,7 @@ describe('BalanceDisplay', () => {
       render(<BalanceDisplay config={mockConfig} />); // Don't pass accountId or defaultProps
 
       await waitFor(() => {
-        expect(screen.getByText('No account connected')).toBeInTheDocument();
+        expect(screen.getByText('Error: No account connected')).toBeInTheDocument();
       });
     });
   });
@@ -248,7 +248,7 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.00')).toBeInTheDocument();
       });
 
-      const refreshButton = screen.getByTitle('Refresh balance');
+      const refreshButton = screen.getByText('🔄 Refresh');
       fireEvent.click(refreshButton);
 
       await waitFor(() => {
@@ -272,11 +272,11 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.00')).toBeInTheDocument();
       });
 
-      const refreshButton = screen.getByTitle('Refresh balance');
+      const refreshButton = screen.getByText('🔄 Refresh');
       fireEvent.click(refreshButton);
 
       // Button should show loading state
-      expect(refreshButton.querySelector('.animate-spin')).toBeInTheDocument();
+      expect(refreshButton).toHaveTextContent('🔄 Refreshing...');
     });
 
     it('disables refresh button while loading', async () => {
@@ -293,7 +293,7 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.00')).toBeInTheDocument();
       });
 
-      const refreshButton = screen.getByTitle('Refresh balance');
+      const refreshButton = screen.getByText('🔄 Refresh');
       fireEvent.click(refreshButton);
 
       expect(refreshButton).toBeDisabled();
@@ -394,8 +394,8 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.50')).toBeInTheDocument();
       });
 
-      expect(screen.getByText('Send')).toBeInTheDocument();
-      expect(screen.getByText('Receive')).toBeInTheDocument();
+      expect(screen.getByText('📤 Send')).toBeInTheDocument();
+      expect(screen.getByText('📥 Receive')).toBeInTheDocument();
     });
 
     it('Send button has correct styling', async () => {
@@ -405,8 +405,8 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.50')).toBeInTheDocument();
       });
 
-      const sendButton = screen.getByText('Send');
-      expect(sendButton).toHaveClass('bg-blue-600', 'hover:bg-blue-700');
+      const sendButton = screen.getByText('📤 Send');
+      expect(sendButton).toHaveClass('echain-action-button', 'echain-action-button-secondary');
     });
 
     it('Receive button has correct styling', async () => {
@@ -416,8 +416,8 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.50')).toBeInTheDocument();
       });
 
-      const receiveButton = screen.getByText('Receive');
-      expect(receiveButton).toHaveClass('bg-white', 'border-gray-300', 'hover:bg-gray-50');
+      const receiveButton = screen.getByText('📥 Receive');
+      expect(receiveButton).toHaveClass('echain-action-button', 'echain-action-button-secondary');
     });
   });
 
@@ -429,7 +429,7 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.50')).toBeInTheDocument();
       });
 
-      const refreshButton = screen.getByTitle('Refresh balance');
+      const refreshButton = screen.getByText('🔄 Refresh');
       expect(refreshButton).toBeInTheDocument();
     });
 
@@ -440,8 +440,8 @@ describe('BalanceDisplay', () => {
         expect(screen.getByText('10.50')).toBeInTheDocument();
       });
 
-      const networkBadge = screen.getByText('testnet');
-      expect(networkBadge).toHaveClass('capitalize');
+      const networkBadge = screen.getByText('Connected');
+      expect(networkBadge).toHaveClass('echain-status-indicator');
     });
   });
 });

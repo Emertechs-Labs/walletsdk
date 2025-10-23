@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echain Wallet SDK - UI Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Echain Wallet SDK</h1>
+            <p>UI Component Demo - Version 1.0.2</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>📊 Balance Display Component</h2>
+            <p>Real-time balance display with automatic formatting and refresh capabilities.</p>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-title">BalanceDisplay</div>
+                    <div class="component-description">Shows HBAR/ETH balance with token support</div>
+                    <div class="component-demo" id="balance-display">
+                        <div class="status-indicator status-warning">Demo Mode</div>
+                        <div class="balance-display-demo">
+                            <div class="icon">💰</div>
+                            <div class="title">Balance Display</div>
+                            <div class="balance">0.00 HBAR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🌐 Network Switcher Component</h2>
+            <p>Network selection component with seamless switching between supported blockchains.</p>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-title">NetworkSwitcher</div>
+                    <div class="component-description">Switch between Ethereum, Base, and Hedera</div>
+                    <div class="component-demo" id="network-switcher">
+                        <div class="status-indicator status-success">Interactive</div>
+                        <div class="network-buttons">
+                            <button class="network-button">Ethereum</button>
+                            <button class="network-button active">Base</button>
+                            <button class="network-button">Hedera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📋 Transaction History Component</h2>
+            <p>Complete transaction history display with filtering, sorting, and pagination.</p>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-title">TransactionHistory</div>
+                    <div class="component-description">View and filter transaction history</div>
+                    <div class="component-demo" id="transaction-history">
+                        <div class="status-indicator status-warning">Demo Mode</div>
+                        <div class="transaction-history-demo">
+                            <div class="transaction-header">
+                                <span>Transaction</span>
+                                <span>Amount</span>
+                                <span>Status</span>
+                            </div>
+                            <div class="transaction-row">
+                                <div class="transaction-info">
+                                    <div class="status-dot status-success"></div>
+                                    <div>
+                                        <div class="transaction-type">Transfer</div>
+                                        <div class="transaction-time">2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="transaction-amount">+0.5 HBAR</div>
+                                <div class="transaction-status status-confirmed">Confirmed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔗 Unified Connect Modal</h2>
+            <p>Universal wallet connection modal supporting all integrated wallet types.</p>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-title">UnifiedConnectModal</div>
+                    <div class="component-description">Connect MetaMask, WalletConnect, Coinbase, HashPack</div>
+                    <div class="component-demo" id="connect-modal">
+                        <div class="status-indicator status-success">Interactive</div>
+                        <div class="connect-modal-demo">
+                            <button class="connect-button">🏦 Connect Wallet</button>
+                            <div class="wallet-support">Supports MetaMask, WalletConnect, Coinbase, HashPack</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔐 Multisig Dashboard</h2>
+            <p>Multi-signature wallet management with approval workflows and security controls.</p>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-title">MultisigDashboard</div>
+                    <div class="component-description">Manage multisig wallets and transaction approvals</div>
+                    <div class="component-demo" id="multisig-dashboard">
+                        <div class="status-indicator status-warning">Demo Mode</div>
+                        <div class="multisig-dashboard-demo">
+                            <div class="multisig-wallet-info">
+                                <div>
+                                    <div class="wallet-title">Multisig Wallet</div>
+                                    <div class="wallet-requirement">2 of 3 required</div>
+                                </div>
+                                <div class="multisig-actions">
+                                    <button class="action-button submit">Submit Tx</button>
+                                    <button class="action-button approve">Approve</button>
+                                </div>
+                            </div>
+                            <div class="pending-transaction">
+                                <div class="transaction-title">Pending Transaction</div>
+                                <div class="transaction-details">Transfer 1.0 HBAR to 0x1234...abcd</div>
+                                <div class="transaction-confirmations">Confirmations: 1/2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Echain Wallet SDK v1.0.2 - Built with ❤️ for the Web3 community</p>
+            <p><a href="https://github.com/Emertechs-Labs/Echain" target="_blank" rel="noopener">View on GitHub</a> | <a href="./docs/README.md" target="_blank" rel="noopener">Documentation</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Add some interactivity to the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Network switcher buttons
+            const networkButtons = document.querySelectorAll('#network-switcher button');
+            networkButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    networkButtons.forEach(btn => {
+                        btn.style.background = 'white';
+                        btn.style.color = '#374151';
+                    });
+                    this.style.background = '#3b82f6';
+                    this.style.color = 'white';
+                });
+            });
+
+            // Connect wallet button
+            const connectButton = document.querySelector('#connect-modal button');
+            connectButton.addEventListener('click', function() {
+                this.textContent = '🔄 Connecting...';
+                this.style.opacity = '0.7';
+                setTimeout(() => {
+                    this.textContent = '✅ Connected!';
+                    this.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    setTimeout(() => {
+                        this.textContent = '🏦 Connect Wallet';
+                        this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                        this.style.opacity = '1';
+                    }, 2000);
+                }, 1000);
+            });
+
+            // Add hover effects
+            const componentCards = document.querySelectorAll('.component-card');
+            componentCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

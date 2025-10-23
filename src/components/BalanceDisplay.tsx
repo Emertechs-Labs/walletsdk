@@ -5,6 +5,8 @@
 
 'use client';
 
+import './styles.css';
+
 import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useBalance } from 'wagmi';
 import { HederaProviderConfig } from '../types/hedera';
@@ -170,129 +172,112 @@ export function BalanceDisplay({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="echain-component">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            {walletType === 'hedera' ? 'Account Balance' : 'Wallet Balance'}
-          </h2>
-          <p className="text-sm text-gray-500 font-mono">{activeAccountId}</p>
+      <div className="echain-header">
+        <div className="echain-header-content">
+          <h1 className="echain-title">💰 Balance Display</h1>
+          <p className="echain-subtitle">Real-time balance with automatic refresh</p>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-            walletType === 'hedera'
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-purple-100 text-purple-800'
-          }`}>
-            {walletType === 'hedera' ? (config?.network || 'hedera') : 'ethereum'}
-          </span>
-          <button
-            onClick={() => fetchBalance(true)}
-            disabled={loading || refreshing}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-            title="Refresh balance"
-          >
-            <svg
-              className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </button>
+      </div>
+
+      {/* Status Indicator */}
+      <div className="echain-section">
+        <div className="echain-status-indicator echain-status-success">
+          Connected
         </div>
+      </div>
+
+      {/* Balance Display */}
+      <div className="echain-balance-display">
+        <div className="echain-balance-icon">💰</div>
+        <div className="echain-balance-title">Current Balance</div>
+        <div className="echain-balance-amount">
+          {walletType === 'hedera'
+            ? formatBalance(hbarBalance)
+            : formatBalance(tokenBalances.find(t => t.token_id === 'eth')?.balance || 0)
+          }
+        </div>
+        <div className="echain-balance-currency">
+          {walletType === 'hedera' ? 'HBAR' : 'ETH'}
+        </div>
+      </div>
+
+      {/* Account Info */}
+      <div className="echain-section">
+        <div className="echain-section-title">Account Information</div>
+        <div className="echain-section-description">
+          {walletType === 'hedera' ? 'Hedera Account' : 'Ethereum Address'}: {activeAccountId}
+        </div>
+        {lastUpdated && (
+          <div className="echain-section-description">
+            Last updated: {formatTimestamp(lastUpdated)}
+            {autoRefresh && (
+              <span className="echain-status-indicator echain-status-info echain-live-indicator">
+                Live
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800 text-sm">{error}</p>
+        <div className="echain-section">
+          <div className="echain-status-indicator echain-status-error">
+            Error: {error}
           </div>
         </div>
       )}
 
-      {/* Balance Display */}
-      <div className="px-6 py-6">
-        {walletType === 'hedera' ? (
-          // Hedera HBAR Balance
-          <div className="flex items-baseline space-x-2">
-            <span className="text-4xl font-bold text-gray-900">
-              {formatBalance(hbarBalance)}
-            </span>
-            <span className="text-2xl font-semibold text-gray-500">HBAR</span>
-          </div>
-        ) : (
-          // Ethereum ETH Balance
-          <div className="flex items-baseline space-x-2">
-            <span className="text-4xl font-bold text-gray-900">
-              {formatBalance(tokenBalances.find(t => t.token_id === 'eth')?.balance || 0)}
-            </span>
-            <span className="text-2xl font-semibold text-gray-500">ETH</span>
-          </div>
-        )}
-        {lastUpdated && (
-          <p className="mt-1 text-sm text-gray-500">
-            Last updated: {formatTimestamp(lastUpdated)}
-            {autoRefresh && (
-              <span className="ml-2 inline-flex items-center">
-                <span className="flex h-2 w-2 relative mr-1">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                Live
-              </span>
-            )}
-          </p>
-        )}
-      </div>
-
       {/* Token Balances */}
       {tokenBalances.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">
-            {walletType === 'hedera' ? 'Token Balances' : 'Token Holdings'}
-          </h3>
-          <div className="space-y-2">
+        <div className="echain-section">
+          <div className="echain-section-title">Token Holdings</div>
+          <div className="echain-token-list">
             {tokenBalances
-              .filter(token => token.token_id !== 'eth' || walletType !== 'ethereum') // Don't show ETH twice
+              .filter(token => token.token_id !== 'eth' || walletType !== 'ethereum')
               .map((token) => (
-              <div
-                key={token.token_id}
-                className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {token.symbol || token.name || (walletType === 'hedera' ? 'Hedera Token' : 'ERC-20 Token')}
-                  </p>
-                  <p className="text-xs font-mono text-gray-500">{token.token_id}</p>
+                <div
+                  key={token.token_id}
+                  className="echain-token-item"
+                >
+                  <div className="echain-token-info">
+                    <div className="echain-token-name">
+                      {token.symbol || token.name || (walletType === 'hedera' ? 'Hedera Token' : 'ERC-20 Token')}
+                    </div>
+                    <div className="echain-token-id">
+                      {token.token_id}
+                    </div>
+                  </div>
+                  <div className="echain-token-amount">
+                    <div className="echain-token-value">
+                      {formatBalance(token.balance / Math.pow(10, token.decimals || (walletType === 'hedera' ? 0 : 18)))}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-gray-900">
-                    {formatBalance(token.balance / Math.pow(10, token.decimals || (walletType === 'hedera' ? 0 : 18)))}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}
 
       {/* Quick Actions */}
-      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex space-x-2">
-        <button className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
-          Send
-        </button>
-        <button className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-          Receive
-        </button>
+      <div className="echain-section echain-actions-section">
+        <div className="echain-actions-grid">
+          <button
+            onClick={() => fetchBalance(true)}
+            disabled={loading || refreshing}
+            className="echain-action-button echain-action-button-primary"
+          >
+            {refreshing ? '🔄 Refreshing...' : '🔄 Refresh'}
+          </button>
+          <button className="echain-action-button echain-action-button-secondary">
+            📤 Send
+          </button>
+          <button className="echain-action-button echain-action-button-secondary">
+            📥 Receive
+          </button>
+        </div>
       </div>
     </div>
   );

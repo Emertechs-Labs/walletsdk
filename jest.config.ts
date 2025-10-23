@@ -11,6 +11,7 @@ const config: Config = {
     '^@rainbow-me/rainbowkit$': '<rootDir>/src/__mocks__/rainbowkit.ts',
     '^@rainbow-me/rainbowkit/(.*)$': '<rootDir>/src/__mocks__/rainbowkit.ts',
     '^../lib/wagmi$': '<rootDir>/src/__mocks__/wagmi.ts',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.(ts|tsx)',

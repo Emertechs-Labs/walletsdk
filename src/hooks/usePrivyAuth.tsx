@@ -24,7 +24,8 @@ export function usePrivyAuth() {
   useEffect(() => {
     const initPrivy = async () => {
       try {
-        const privyModule = await import('@privy-io/react-auth').catch(() => null);
+        // Dynamic import with type assertion to avoid TypeScript resolution
+        const privyModule = await (import('@privy-io/react-auth') as any).catch(() => null);
         if (!privyModule) {
           setError('Privy not installed or not configured');
           setIsReady(true);
@@ -44,7 +45,7 @@ export function usePrivyAuth() {
     setLoading(true);
     setError(null);
     try {
-      const privyModule = await import('@privy-io/react-auth').catch(() => null);
+      const privyModule = await (import('@privy-io/react-auth') as any).catch(() => null);
       if (!privyModule) {
         throw new Error('Privy integration requires PrivyProvider in the app and @privy-io/react-auth package');
       }
@@ -74,7 +75,7 @@ export function usePrivyAuth() {
 
   const signOut = async () => {
     try {
-      const privyModule = await import('@privy-io/react-auth').catch(() => null);
+      const privyModule = await (import('@privy-io/react-auth') as any).catch(() => null);
       if (!privyModule) {
         throw new Error('Privy not available');
       }
@@ -111,7 +112,7 @@ export const PrivyProvider = ({
   useEffect(() => {
     const loadPrivy = async () => {
       try {
-        const privyModule = await import('@privy-io/react-auth').catch(() => null);
+        const privyModule = await (import('@privy-io/react-auth') as any).catch(() => null);
         if (privyModule) {
           const { PrivyProvider } = privyModule;
           setPrivyProviderComponent(() => PrivyProvider);

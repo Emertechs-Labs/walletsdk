@@ -1,0 +1,365 @@
+/* Echain Wallet SDK Demo Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.demo-section {
+    padding: 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.demo-section:last-child {
+    border-bottom: none;
+}
+
+.demo-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.demo-section p {
+    color: #6b7280;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.component-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.component-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.component-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.component-description {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.component-demo {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 20px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.status-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.footer {
+    background: #f9fafb;
+    padding: 20px 30px;
+    text-align: center;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+}
+
+.footer a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Component specific styles */
+.balance-display-demo {
+    text-align: center;
+    color: #6b7280;
+}
+
+.balance-display-demo .icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.balance-display-demo .title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.balance-display-demo .balance {
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.network-switcher-demo {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.network-button {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #374151;
+}
+
+.network-button.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.transaction-history-demo {
+    width: 100%;
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.transaction-row {
+    padding: 15px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.transaction-status {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+}
+
+.transaction-details .title {
+    font-weight: 500;
+}
+
+.transaction-details .time {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.transaction-amount {
+    font-weight: 600;
+}
+
+.transaction-status-badge {
+    padding: 4px 8px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.connect-modal-demo {
+    text-align: center;
+}
+
+.connect-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s;
+}
+
+.connect-button.connecting {
+    opacity: 0.7;
+}
+
+.connect-button.connected {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.connect-description {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.multisig-dashboard-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.multisig-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f3f4f6;
+    border-radius: 6px;
+}
+
+.multisig-info .title {
+    font-weight: 600;
+}
+
+.multisig-info .subtitle {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.multisig-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.multisig-button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.multisig-button.submit {
+    background: #10b981;
+    color: white;
+}
+
+.multisig-button.approve {
+    background: #f59e0b;
+    color: white;
+}
+
+.pending-transaction {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+.pending-transaction .title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.pending-transaction .details {
+    font-size: 0.9rem;
+}
+
+.pending-transaction .confirmations {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+    }
+
+    .header {
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .component-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

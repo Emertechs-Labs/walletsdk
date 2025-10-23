@@ -7,6 +7,7 @@ export { useUserWallets } from './useUserWallets';
 export { useUniversalWallet } from './useUniversalWallet';
 export { useSIWE } from './useSIWE';
 export { useFarcasterAuth } from './useFarcasterAuth';
-export { usePrivyAuth, PrivyProvider } from './usePrivyAuth';
+// Temporarily disabled due to build issues - will be re-enabled in next version
+// export { usePrivyAuth, PrivyProvider } from './usePrivyAuth';
 export { useGasOptimization } from './useGasOptimization';
 export { useTransactionHistory } from './useTransactionHistory';

@@ -2,6 +2,23 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NetworkSwitcher, NetworkBadge, NetworkSwitcherProps } from '../NetworkSwitcher';
 import { HederaNetwork } from '../../types/hedera';
 
+// Mock wagmi hooks
+jest.mock('wagmi', () => ({
+  useChainId: () => 84532, // Base Sepolia
+  useSwitchChain: () => ({
+    switchChain: jest.fn().mockResolvedValue(undefined),
+  }),
+}));
+
+// Mock window.ethereum
+Object.defineProperty(window, 'ethereum', {
+  value: {
+    isMetaMask: true,
+    request: jest.fn().mockResolvedValue(undefined),
+  },
+  writable: true,
+});
+
 describe('NetworkSwitcher', () => {
   const mockOnNetworkChange = jest.fn();
 
@@ -15,132 +32,93 @@ describe('NetworkSwitcher', () => {
   });
 
   describe('initial rendering', () => {
-    it('displays current network with icon and name', () => {
+    it('displays component title and subtitle', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      expect(screen.getByText('💜')).toBeInTheDocument();
-      expect(screen.getByText('Hedera Testnet')).toBeInTheDocument();
-      expect(screen.getByText('Hedera test network')).toBeInTheDocument();
+      expect(screen.getByText('🌐 Network Switcher')).toBeInTheDocument();
+      expect(screen.getByText('Switch between blockchain networks')).toBeInTheDocument();
     });
 
-    it('shows label by default', () => {
+    it('shows status indicator', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      expect(screen.getByText('Network')).toBeInTheDocument();
+      expect(screen.getByText('Interactive')).toBeInTheDocument();
     });
 
-    it('hides label when showLabel is false', () => {
-      render(<NetworkSwitcher {...defaultProps} showLabel={false} />);
-
-      expect(screen.queryByText('Network')).not.toBeInTheDocument();
-    });
-
-    it('displays dropdown arrow', () => {
+    it('displays all available networks', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const arrowIcon = document.querySelector('svg');
-      expect(arrowIcon).toBeInTheDocument();
-    });
-  });
-
-  describe('dropdown functionality', () => {
-    it('opens dropdown when button is clicked', () => {
-      render(<NetworkSwitcher {...defaultProps} />);
-
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
-
+      expect(screen.getByText('Base Sepolia')).toBeInTheDocument();
+      expect(screen.getByText('Base Mainnet')).toBeInTheDocument();
+      expect(screen.getAllByText('Hedera Testnet')).toHaveLength(2); // Button and current network
       expect(screen.getByText('Hedera Mainnet')).toBeInTheDocument();
       expect(screen.getByText('Hedera Previewnet')).toBeInTheDocument();
     });
 
-    it('closes dropdown when clicking outside', async () => {
+    it('shows current network section', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
+      expect(screen.getByText('Current Network')).toBeInTheDocument();
+      
+      // Check current network display specifically
+      const currentNetworkSection = screen.getByText('Current Network').parentElement;
+      expect(currentNetworkSection).toHaveTextContent('💜');
+      expect(currentNetworkSection).toHaveTextContent('Hedera Testnet');
+      expect(currentNetworkSection).toHaveTextContent('Hedera test network');
+    });
 
-      expect(screen.getByText('Hedera Mainnet')).toBeInTheDocument();
+    it('highlights the active network', () => {
+      render(<NetworkSwitcher {...defaultProps} />);
 
-      // Click on backdrop
-      const backdrop = document.querySelector('.fixed.inset-0');
-      fireEvent.click(backdrop!);
+      // Find the active button by looking for the button with 'active' class
+      const activeButton = screen.getByRole('button', { name: /Hedera Testnet/ });
+      expect(activeButton).toHaveClass('active');
+    });
+  });
+
+  describe('network selection', () => {
+    it('calls onNetworkChange when network button is clicked', async () => {
+      render(<NetworkSwitcher {...defaultProps} />);
+
+      const mainnetButton = screen.getByRole('button', { name: /Hedera Mainnet/ });
+      fireEvent.click(mainnetButton);
 
       await waitFor(() => {
-        expect(screen.queryByText('Hedera Mainnet')).not.toBeInTheDocument();
+        expect(mockOnNetworkChange).toHaveBeenCalledWith('hedera-mainnet', 'hedera');
       });
     });
 
-    it('closes dropdown when network is selected', async () => {
+    it('does not call onNetworkChange when clicking the active network', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
-
-      const mainnetButton = screen.getByText('Hedera Mainnet').closest('button');
-      fireEvent.click(mainnetButton!);
-
-      await waitFor(() => {
-        expect(screen.queryByText('Hedera Mainnet')).not.toBeInTheDocument();
-      });
-
-      expect(mockOnNetworkChange).toHaveBeenCalledWith('hedera-mainnet', 'hedera');
-    });
-
-    it('does not call onNetworkChange when selecting current network', () => {
-      render(<NetworkSwitcher {...defaultProps} />);
-
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
-
-      const testnetButton = screen.getAllByText('Hedera Testnet')[1].closest('button'); // Second instance is in dropdown
-      fireEvent.click(testnetButton!);
+      const testnetButton = screen.getByRole('button', { name: /Hedera Testnet/ });
+      fireEvent.click(testnetButton);
 
       expect(mockOnNetworkChange).not.toHaveBeenCalled();
     });
 
-    it('shows checkmark for currently selected network', () => {
+    it('updates current network display when network is selected', async () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
+      const mainnetButton = screen.getByRole('button', { name: /Hedera Mainnet/ });
+      fireEvent.click(mainnetButton);
 
-      // Find the checkmark icon in the testnet option
-      const testnetOption = screen.getAllByText('Hedera Testnet')[1].closest('button');
-      const checkmark = testnetOption?.querySelector('svg');
-      expect(checkmark).toBeInTheDocument();
-    });
-
-    it('rotates arrow icon when dropdown is open', () => {
-      render(<NetworkSwitcher {...defaultProps} />);
-
-      const button = screen.getByRole('button');
-      const arrowIcon = button.querySelector('svg');
-
-      expect(arrowIcon).not.toHaveClass('rotate-180');
-
-      fireEvent.click(button);
-
-      expect(arrowIcon).toHaveClass('rotate-180');
+      // The component doesn't update its display based on clicks - it relies on props
+      // This test should check that onNetworkChange was called, which triggers parent to update
+      await waitFor(() => {
+        expect(mockOnNetworkChange).toHaveBeenCalledWith('hedera-mainnet', 'hedera');
+      });
     });
   });
 
   describe('disabled state', () => {
-    it('disables button when disabled prop is true', () => {
+    it('disables all network buttons when disabled prop is true', () => {
       render(<NetworkSwitcher {...defaultProps} disabled={true} />);
 
-      const button = screen.getByRole('button');
-      expect(button).toBeDisabled();
-      expect(button).toHaveClass('opacity-50', 'cursor-not-allowed');
-    });
-
-    it('does not open dropdown when disabled', () => {
-      render(<NetworkSwitcher {...defaultProps} disabled={true} />);
-
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
-
-      expect(screen.queryByText('Hedera Mainnet')).not.toBeInTheDocument();
+      const buttons = screen.getAllByRole('button');
+      buttons.forEach(button => {
+        expect(button).toBeDisabled();
+      });
     });
   });
 
@@ -149,53 +127,42 @@ describe('NetworkSwitcher', () => {
       { network: 'hedera-testnet', name: 'Hedera Testnet', description: 'Hedera test network', icon: '💜' },
       { network: 'hedera-mainnet', name: 'Hedera Mainnet', description: 'Hedera production network', icon: '💚' },
       { network: 'hedera-previewnet', name: 'Hedera Previewnet', description: 'Hedera preview network', icon: '🔮' },
+      { network: 'base-sepolia', name: 'Base Sepolia', description: 'Base testnet on Ethereum', icon: '🧪' },
+      { network: 'base-mainnet', name: 'Base Mainnet', description: 'Base mainnet on Ethereum', icon: '🔷' },
     ];
 
     testCases.forEach(({ network, name, description, icon }) => {
       it(`displays correct info for ${network}`, () => {
         render(<NetworkSwitcher {...defaultProps} currentNetwork={network} />);
 
-        expect(screen.getByText(icon)).toBeInTheDocument();
-        expect(screen.getByText(name)).toBeInTheDocument();
-        expect(screen.getByText(description)).toBeInTheDocument();
+        // Check that the name appears at least once (in current network display)
+        expect(screen.getAllByText(name)).toHaveLength(2); // One in button, one in current network
+        expect(screen.getAllByText(description)).toHaveLength(2); // One in button, one in current network
+        
+        // Check that the icon appears at least once (it appears in both button and current network)
+        expect(screen.getAllByText(icon)).toHaveLength(2);
       });
     });
   });
 
   describe('accessibility', () => {
-    it('has proper ARIA attributes', () => {
+    it('has proper button types', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'button');
-    });
-
-    it('supports keyboard navigation', async () => {
-      render(<NetworkSwitcher {...defaultProps} />);
-
-      const button = screen.getByRole('button');
-
-      // Focus the button
-      button.focus();
-      expect(button).toHaveFocus();
-
-      // Use click to open dropdown (Enter key isn't handled in this component)
-      fireEvent.click(button);
-      expect(screen.getByText('Hedera Mainnet')).toBeInTheDocument();
-
-      // Close dropdown by clicking backdrop (component closes on outside click)
-      const backdrop = document.querySelector('.fixed.inset-0');
-      fireEvent.click(backdrop!);
-      await waitFor(() => {
-        expect(screen.queryByText('Hedera Mainnet')).not.toBeInTheDocument();
+      const buttons = screen.getAllByRole('button');
+      buttons.forEach(button => {
+        expect(button).toHaveAttribute('type', 'button');
       });
     });
 
-    it('has proper focus styles', () => {
+    it('supports keyboard navigation', () => {
       render(<NetworkSwitcher {...defaultProps} />);
 
-      const button = screen.getByRole('button');
-      expect(button).toHaveClass('focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500');
+      const firstButton = screen.getByText('Base Sepolia').closest('button');
+
+      // Focus the first button
+      firstButton?.focus();
+      expect(firstButton).toHaveFocus();
     });
   });
 });

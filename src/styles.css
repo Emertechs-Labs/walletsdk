@@ -1,0 +1,573 @@
+/* EChain Wallet SDK - Shared Styles */
+
+/* CSS Variables for Theming */
+:root {
+  /* Primary Colors */
+  --echain-primary-50: #eff6ff;
+  --echain-primary-100: #dbeafe;
+  --echain-primary-200: #bfdbfe;
+  --echain-primary-300: #93c5fd;
+  --echain-primary-400: #60a5fa;
+  --echain-primary-500: #3b82f6;
+  --echain-primary-600: #2563eb;
+  --echain-primary-700: #1d4ed8;
+  --echain-primary-800: #1e40af;
+  --echain-primary-900: #1e3a8a;
+
+  /* Gray Colors */
+  --echain-gray-50: #f9fafb;
+  --echain-gray-100: #f3f4f6;
+  --echain-gray-200: #e5e7eb;
+  --echain-gray-300: #d1d5db;
+  --echain-gray-400: #9ca3af;
+  --echain-gray-500: #6b7280;
+  --echain-gray-600: #4b5563;
+  --echain-gray-700: #374151;
+  --echain-gray-800: #1f2937;
+  --echain-gray-900: #111827;
+
+  /* Status Colors */
+  --echain-success: #10b981;
+  --echain-success-light: #d1fae5;
+  --echain-warning: #f59e0b;
+  --echain-warning-light: #fef3c7;
+  --echain-error: #ef4444;
+  --echain-error-light: #fee2e2;
+  --echain-info: #3b82f6;
+  --echain-info-light: #dbeafe;
+
+  /* Spacing */
+  --echain-space-1: 0.25rem;
+  --echain-space-2: 0.5rem;
+  --echain-space-3: 0.75rem;
+  --echain-space-4: 1rem;
+  --echain-space-6: 1.5rem;
+  --echain-space-8: 2rem;
+  --echain-space-12: 3rem;
+  --echain-space-16: 4rem;
+
+  /* Border Radius */
+  --echain-radius-sm: 0.125rem;
+  --echain-radius: 0.25rem;
+  --echain-radius-md: 0.375rem;
+  --echain-radius-lg: 0.5rem;
+  --echain-radius-xl: 0.75rem;
+  --echain-radius-2xl: 1rem;
+
+  /* Shadows */
+  --echain-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --echain-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --echain-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --echain-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --echain-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Gradients */
+  --echain-gradient-primary: linear-gradient(135deg, var(--echain-primary-500), var(--echain-primary-700));
+  --echain-gradient-success: linear-gradient(135deg, var(--echain-success), #059669);
+  --echain-gradient-warning: linear-gradient(135deg, var(--echain-warning), #d97706);
+  --echain-gradient-error: linear-gradient(135deg, var(--echain-error), #dc2626);
+}
+
+/* Base Component Styles */
+.echain-component {
+  background: white;
+  border-radius: var(--echain-radius-xl);
+  box-shadow: var(--echain-shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--echain-gray-200);
+}
+
+/* Header Styles */
+.echain-header {
+  background: var(--echain-gradient-primary);
+  color: white;
+  padding: var(--echain-space-6);
+}
+
+.echain-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--echain-space-2);
+}
+
+.echain-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--echain-space-2);
+}
+
+.echain-subtitle {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Section Styles */
+.echain-section {
+  padding: var(--echain-space-6);
+  border-bottom: 1px solid var(--echain-gray-100);
+}
+
+.echain-section:last-child {
+  border-bottom: none;
+}
+
+.echain-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--echain-gray-900);
+  margin-bottom: var(--echain-space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--echain-space-2);
+}
+
+/* Status Indicators */
+.echain-status-indicator {
+  padding: var(--echain-space-3) var(--echain-space-4);
+  border-radius: var(--echain-radius-md);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--echain-space-2);
+}
+
+.echain-status-success {
+  background-color: var(--echain-success-light);
+  color: var(--echain-success);
+  border: 1px solid var(--echain-success);
+}
+
+.echain-status-warning {
+  background-color: var(--echain-warning-light);
+  color: var(--echain-warning);
+  border: 1px solid var(--echain-warning);
+}
+
+.echain-status-error {
+  background-color: var(--echain-error-light);
+  color: var(--echain-error);
+  border: 1px solid var(--echain-error);
+}
+
+.echain-status-info {
+  background-color: var(--echain-info-light);
+  color: var(--echain-info);
+  border: 1px solid var(--echain-info);
+}
+
+/* Action Buttons */
+.echain-action-button {
+  padding: var(--echain-space-3) var(--echain-space-4);
+  border-radius: var(--echain-radius-md);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--echain-space-2);
+}
+
+.echain-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--echain-shadow-md);
+}
+
+.echain-action-button:active {
+  transform: translateY(0);
+}
+
+.echain-action-button-primary {
+  background: var(--echain-gradient-primary);
+  color: white;
+}
+
+.echain-action-button-primary:hover {
+  background: linear-gradient(135deg, var(--echain-primary-600), var(--echain-primary-800));
+}
+
+.echain-action-button-secondary {
+  background: white;
+  color: var(--echain-gray-700);
+  border-color: var(--echain-gray-300);
+}
+
+.echain-action-button-secondary:hover {
+  background: var(--echain-gray-50);
+  border-color: var(--echain-gray-400);
+}
+
+/* Balance Display Styles */
+.echain-balance-section {
+  background: linear-gradient(135deg, var(--echain-primary-50), var(--echain-primary-100));
+  border: 1px solid var(--echain-primary-200);
+}
+
+.echain-balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--echain-space-4);
+}
+
+.echain-balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--echain-primary-700);
+  margin-bottom: var(--echain-space-2);
+}
+
+.echain-balance-label {
+  font-size: 0.875rem;
+  color: var(--echain-primary-600);
+  font-weight: 500;
+}
+
+.echain-token-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--echain-space-4);
+}
+
+.echain-token-item {
+  background: white;
+  padding: var(--echain-space-4);
+  border-radius: var(--echain-radius-lg);
+  border: 1px solid var(--echain-gray-200);
+  transition: all 0.2s ease;
+}
+
+.echain-token-item:hover {
+  box-shadow: var(--echain-shadow-md);
+  border-color: var(--echain-primary-300);
+}
+
+.echain-token-symbol {
+  font-weight: 600;
+  color: var(--echain-gray-900);
+  margin-bottom: var(--echain-space-1);
+}
+
+.echain-token-balance {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--echain-primary-600);
+  margin-bottom: var(--echain-space-1);
+}
+
+.echain-token-value {
+  font-size: 0.875rem;
+  color: var(--echain-gray-500);
+}
+
+/* Network Switcher Styles */
+.echain-network-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--echain-space-3);
+}
+
+.echain-network-button {
+  padding: var(--echain-space-4);
+  border-radius: var(--echain-radius-lg);
+  border: 2px solid var(--echain-gray-200);
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--echain-space-2);
+  text-align: center;
+}
+
+.echain-network-button:hover {
+  border-color: var(--echain-primary-300);
+  box-shadow: var(--echain-shadow-md);
+  transform: translateY(-2px);
+}
+
+.echain-network-button.active {
+  border-color: var(--echain-primary-500);
+  background: var(--echain-primary-50);
+  box-shadow: var(--echain-shadow-md);
+}
+
+.echain-network-icon {
+  font-size: 1.5rem;
+}
+
+.echain-network-name {
+  font-weight: 600;
+  color: var(--echain-gray-900);
+  font-size: 0.875rem;
+}
+
+.echain-network-chainid {
+  font-size: 0.75rem;
+  color: var(--echain-gray-500);
+}
+
+.echain-current-network {
+  background: var(--echain-gradient-primary);
+  color: white;
+  padding: var(--echain-space-4);
+  border-radius: var(--echain-radius-lg);
+  text-align: center;
+}
+
+.echain-current-network-title {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: var(--echain-space-1);
+}
+
+.echain-current-network-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+/* Transaction History Styles */
+.echain-transaction-history {
+  border: 1px solid var(--echain-gray-200);
+  border-radius: var(--echain-radius-lg);
+  overflow: hidden;
+}
+
+.echain-transaction-header {
+  background: var(--echain-gray-50);
+  padding: var(--echain-space-4);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--echain-space-4);
+  font-weight: 600;
+  color: var(--echain-gray-700);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--echain-gray-200);
+}
+
+.echain-transaction-row {
+  padding: var(--echain-space-4);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--echain-space-4);
+  border-bottom: 1px solid var(--echain-gray-100);
+  transition: background-color 0.2s ease;
+}
+
+.echain-transaction-row:hover {
+  background: var(--echain-gray-50);
+}
+
+.echain-transaction-row:last-child {
+  border-bottom: none;
+}
+
+.echain-transaction-info {
+  display: flex;
+  align-items: center;
+  gap: var(--echain-space-3);
+}
+
+.echain-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.echain-transaction-type {
+  font-weight: 600;
+  color: var(--echain-gray-900);
+  margin-bottom: var(--echain-space-1);
+}
+
+.echain-transaction-time {
+  font-size: 0.75rem;
+  color: var(--echain-gray-500);
+}
+
+.echain-transaction-amount {
+  font-weight: 600;
+  color: var(--echain-primary-600);
+  text-align: right;
+}
+
+.echain-transaction-status {
+  padding: var(--echain-space-1) var(--echain-space-2);
+  border-radius: var(--echain-radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.echain-status-confirmed {
+  background: var(--echain-success-light);
+  color: var(--echain-success);
+}
+
+.echain-status-pending {
+  background: var(--echain-warning-light);
+  color: var(--echain-warning);
+}
+
+.echain-status-failed {
+  background: var(--echain-error-light);
+  color: var(--echain-error);
+}
+
+/* Loading Animation */
+.echain-loading {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--echain-gray-200);
+  border-top: 3px solid var(--echain-primary-500);
+  border-radius: 50%;
+  animation: echain-spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.echain-loading-container {
+  text-align: center;
+  padding: var(--echain-space-16);
+}
+
+.echain-loading-text {
+  margin-top: var(--echain-space-3);
+  color: var(--echain-gray-600);
+}
+
+@keyframes echain-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Form Styles */
+.echain-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--echain-space-4);
+}
+
+.echain-form-actions {
+  display: flex;
+  gap: var(--echain-space-2);
+  align-items: flex-end;
+}
+
+.echain-form-actions-end {
+  display: flex;
+  gap: var(--echain-space-2);
+  justify-content: flex-end;
+}
+
+/* Pagination Styles */
+.echain-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.echain-pagination-info {
+  font-size: 0.875rem;
+  color: var(--echain-gray-700);
+}
+
+.echain-pagination-controls {
+  display: flex;
+  gap: var(--echain-space-2);
+}
+
+.echain-pagination-button {
+  padding: var(--echain-space-2) var(--echain-space-3);
+  border: 1px solid var(--echain-gray-300);
+  background: white;
+  color: var(--echain-gray-700);
+  border-radius: var(--echain-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.echain-pagination-button:hover:not(:disabled) {
+  background: var(--echain-gray-50);
+  border-color: var(--echain-gray-400);
+}
+
+.echain-pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.echain-pagination-current {
+  padding: var(--echain-space-2) var(--echain-space-3);
+  color: var(--echain-gray-700);
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .echain-header {
+    padding: var(--echain-space-4);
+  }
+
+  .echain-section {
+    padding: var(--echain-space-4);
+  }
+
+  .echain-title {
+    font-size: 1.25rem;
+  }
+
+  .echain-network-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .echain-token-list {
+    grid-template-columns: 1fr;
+  }
+
+  .echain-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .echain-transaction-header,
+  .echain-transaction-row {
+    grid-template-columns: 1fr;
+    gap: var(--echain-space-2);
+  }
+
+  .echain-transaction-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--echain-space-1);
+  }
+
+  .echain-pagination {
+    flex-direction: column;
+    gap: var(--echain-space-3);
+    align-items: stretch;
+  }
+
+  .echain-pagination-controls {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .echain-network-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .echain-action-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

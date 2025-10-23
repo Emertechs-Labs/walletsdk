@@ -1,5 +1,7 @@
 'use client';
 
+import './styles.css';
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useHederaProvider } from '../hooks/useHederaProvider';
 import type { HederaProviderConfig, MultisigTransaction } from '../types/hedera';
@@ -36,8 +38,6 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20);
-  const [sortBy, setSortBy] = useState<'timestamp' | 'amount' | 'status'>('timestamp');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Filters state
   const [filters, setFilters] = useState<TransactionFilters>({});
@@ -77,7 +77,6 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
       const response = await transactionService.getAccountTransactions({
         accountId,
         limit: pageSize,
-        order: sortOrder,
       });
 
       // Convert Hedera transactions to our format
@@ -111,7 +110,7 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
     } finally {
       setLoading(false);
     }
-  }, [accountId, transactionService, pageSize, sortOrder]);
+  }, [accountId, transactionService, pageSize]);
 
   // Load transactions
   useEffect(() => {
@@ -182,36 +181,8 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
       );
     }
 
-    // Sort
-    filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
-
-      switch (sortBy) {
-        case 'timestamp':
-          aValue = a.timestamp;
-          bValue = b.timestamp;
-          break;
-        case 'amount':
-          aValue = parseFloat(a.value);
-          bValue = parseFloat(b.value);
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          return 0;
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
     return filtered;
-  }, [transactions, filters, sortBy, sortOrder]);
+  }, [transactions, filters]);
 
   // Pagination
   const totalPages = Math.ceil(filteredTransactions.length / pageSize);
@@ -269,16 +240,6 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
     setCurrentPage(1);
   };
 
-  // Handle sort
-  const handleSort = (field: 'timestamp' | 'amount' | 'status') => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('desc');
-    }
-  };
-
   // Get status color
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -312,33 +273,47 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-md ${className}`}>
+    <div className={`echain-component ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">Transaction History</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-            >
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
-            <button
-              onClick={loadTransactions}
-              disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Loading...' : 'Refresh'}
-            </button>
-          </div>
+      <div className="echain-header">
+        <div className="echain-header-content">
+          <h1 className="echain-title">📋 Transaction History</h1>
+          <p className="echain-subtitle">Complete transaction history with filtering</p>
+        </div>
+      </div>
+
+      {/* Status Indicator */}
+      <div className="echain-section">
+        <div className="echain-status-indicator echain-status-warning">
+          Demo Mode
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="echain-section">
+        <div className="echain-section-title">Transaction Controls</div>
+        <div className="echain-form-actions">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="echain-action-button echain-action-button-secondary"
+          >
+            {showFilters ? '🔽 Hide Filters' : '🔼 Show Filters'}
+          </button>
+          <button
+            onClick={loadTransactions}
+            disabled={loading}
+            className="echain-action-button echain-action-button-primary"
+          >
+            {loading ? '⏳ Loading...' : '🔄 Refresh'}
+          </button>
         </div>
       </div>
 
       {/* Filters */}
       {showFilters && (
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="echain-section">
+          <div className="echain-section-title">Filter Transactions</div>
+          <div className="echain-form-grid">
             {/* Date Range */}
             <div>
               <label htmlFor="filter-start-date" className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
@@ -392,9 +367,7 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {/* Status Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -461,151 +434,108 @@ export function TransactionHistory({ hederaConfig, accountId, className = '' }: 
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
 
-          <div className="flex justify-end space-x-2 mt-4">
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              Clear Filters
-            </button>
-            <button
-              onClick={applyFilters}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-            >
-              Apply Filters
-            </button>
+            {/* Filter Actions */}
+            <div className="echain-form-actions">
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Clear
+              </button>
+              <button
+                onClick={applyFilters}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Error Display */}
       {error && (
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+        <div className="echain-section">
+          <div className="echain-status-indicator echain-status-error">
+            Error: {error}
           </div>
         </div>
       )}
 
       {/* Transaction Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('timestamp')}
-              >
-                Date/Time {sortBy === 'timestamp' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                To/From
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('amount')}
-              >
-                Amount {sortBy === 'amount' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('status')}
-              >
-                Status {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-sm text-gray-600">Loading transactions...</p>
-                </td>
-              </tr>
-            ) : paginatedTransactions.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center">
-                  <div className="py-12">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No transactions found</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {Object.keys(filters).length > 0 ? 'Try adjusting your filters.' : 'Your transaction history will appear here.'}
-                    </p>
+      <div className="echain-section">
+        <div className="echain-section-title">Recent Transactions</div>
+        <div className="echain-transaction-history">
+          <div className="echain-transaction-header">
+            <span>Transaction</span>
+            <span>Amount</span>
+            <span>Status</span>
+          </div>
+          {loading ? (
+            <div className="echain-loading-container">
+              <div className="echain-loading"></div>
+              <p className="echain-loading-text">Loading transactions...</p>
+            </div>
+          ) : paginatedTransactions.length === 0 ? (
+            <div className="echain-empty-state">
+              <div className="echain-empty-icon">📄</div>
+              <h3 className="echain-empty-title">No transactions found</h3>
+              <p className="echain-empty-description">
+                {Object.keys(filters).length > 0 ? 'Try adjusting your filters.' : 'Your transaction history will appear here.'}
+              </p>
+            </div>
+          ) : (
+            paginatedTransactions.map((tx) => (
+              <div key={tx.id} className="echain-transaction-row">
+                <div className="echain-transaction-info">
+                  <div className={`echain-status-dot ${getStatusColor(tx.status).includes('green') ? 'echain-status-success' :
+                    getStatusColor(tx.status).includes('yellow') ? 'echain-status-warning' :
+                    getStatusColor(tx.status).includes('red') ? 'echain-status-error' : 'echain-status-info'}`}></div>
+                  <div>
+                    <div className="echain-transaction-type">{getTransactionType(tx)}</div>
+                    <div className="echain-transaction-time">{new Date(tx.timestamp).toLocaleString()}</div>
                   </div>
-                </td>
-              </tr>
-            ) : (
-              paginatedTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(tx.timestamp).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {getTransactionType(tx)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
-                    {tx.to}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {tx.value} HBAR
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(tx.status)}`}>
-                      {tx.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button className="text-blue-600 hover:text-blue-900 mr-2">
-                      View Details
-                    </button>
-                    {tx.hash && (
-                      <button className="text-gray-600 hover:text-gray-900">
-                        Copy Hash
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                </div>
+                <div className="echain-transaction-amount">{tx.value} HBAR</div>
+                <div className={`echain-transaction-status ${getStatusColor(tx.status).includes('green') ? 'echain-status-confirmed' :
+                  getStatusColor(tx.status).includes('yellow') ? 'echain-status-pending' :
+                  getStatusColor(tx.status).includes('red') ? 'echain-status-failed' :
+                  getStatusColor(tx.status).includes('blue') ? 'echain-status-info' : 'echain-status-confirmed'}`}>
+                  {tx.status}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-          <div className="text-sm text-gray-700">
-            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredTransactions.length)} of {filteredTransactions.length} transactions
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <span className="px-3 py-1 text-sm text-gray-700">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
+        <div className="echain-section">
+          <div className="echain-pagination">
+            <div className="echain-pagination-info">
+              Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredTransactions.length)} of {filteredTransactions.length} transactions
+            </div>
+            <div className="echain-pagination-controls">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="echain-pagination-button"
+              >
+                Previous
+              </button>
+              <span className="echain-pagination-current">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="echain-pagination-button"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}

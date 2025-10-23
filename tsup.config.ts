@@ -17,7 +17,7 @@ export default defineConfig({
   target: 'es2020',
   // Bundle everything to avoid relative path issues, but use ESM format to avoid dynamic require
   bundle: true,
-  external: ['react', 'react-dom', '@tanstack/react-query', 'wagmi', 'viem', '@hashgraph/sdk', 'ua-parser-js'],
+  external: ['react', 'react-dom', '@tanstack/react-query', 'wagmi', 'viem', '@hashgraph/sdk', 'ua-parser-js', 'firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/util', '@firebase/component', '@privy-io/react-auth', '@farcaster/auth-kit'],
   // Force treeshaking to remove unused code
   treeshake: true,
   // Use esbuild's ESM output
